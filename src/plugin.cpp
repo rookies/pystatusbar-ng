@@ -38,9 +38,17 @@ bool Plugin::init(std::string name, std::string file)
 	m_lua = luaL_newstate();
 	luaL_openlibs(m_lua);
 	if (luaL_loadfile(m_lua, file.c_str()) != 0)
+	{
+		std::cerr << lua_tostring(m_lua, -1) << std::endl;
 		return false;
+	};
 	if (lua_pcall(m_lua, 0, LUA_MULTRET, 0) != 0)
+	{
+		std::cerr << lua_tostring(m_lua, -1) << std::endl;
 		return false;
+	};
+	lua_getglobal(m_lua, "PLUGIN_infoCollectorsNum");
+	m_infocollectors_num = lua_tointeger(m_lua, -1);
 	/*
 	 * Set variables:
 	*/
@@ -64,7 +72,10 @@ bool Plugin::print_content(void)
 	*/
 	lua_getglobal(m_lua, "getContent");
 	if (lua_pcall(m_lua, 0, 1, 0) != 0)
+	{
+		std::cerr << lua_tostring(m_lua, -1) << std::endl;
 		return false;
+	};
 	std::cout << lua_tostring(m_lua, -1);
 	/*
 	 * Return:
@@ -73,5 +84,16 @@ bool Plugin::print_content(void)
 }
 void Plugin::uninit(void)
 {
+	assert(true == m_active);
 	m_active = false;
+}
+std::string Plugin::get_name(void)
+{
+	assert(true == m_active);
+	return m_name;
+}
+int Plugin::get_infocollectors_num(void)
+{
+	assert(true == m_active);
+	return m_infocollectors_num;
 }

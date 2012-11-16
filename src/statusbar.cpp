@@ -66,6 +66,7 @@ bool StatusBar::init(void)
 		if (m_plugins[i].init(tmp, glob_res.gl_pathv[i]))
 		{
 			std::cerr << "  [" << tmp << "] (" << glob_res.gl_pathv[i] << ") done." << std::endl;
+			std::cerr << "    infoCollectorsNum: " << m_plugins[i].get_infocollectors_num() << std::endl;
 		}
 		else
 		{
@@ -109,8 +110,12 @@ void StatusBar::loop(void)
 		{
 			if (m_plugins[i].is_active())
 			{
+				if (i > 0)
+					std::cout << "^fg(#333333)^p(5;-2)^ro(2)^p()^fg()^p(5)";
+				std::cout << "^fg(#FFFFFF)";
 				if (!m_plugins[i].print_content())
 				{
+					std::cerr << "ERROR: " << m_plugins[i].get_name() << " -> getContent() failed." << std::endl;
 					m_plugins[i].uninit();
 				};
 			};

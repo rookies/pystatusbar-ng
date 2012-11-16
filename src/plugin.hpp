@@ -41,10 +41,13 @@
 			bool is_active(void);
 			bool print_content(void);
 			void uninit(void);
+			std::string get_name(void);
+			int get_infocollectors_num(void);
 		private:
 			bool m_active;
 			std::string m_name;
 			std::string m_file;
 			lua_State *m_lua;
+			int m_infocollectors_num;
 	};
 #endif // PLUGIN_HPP
