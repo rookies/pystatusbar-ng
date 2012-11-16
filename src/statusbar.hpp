@@ -52,5 +52,6 @@
 			bool m_inited;
 			Plugin *m_plugins;
 			int m_plugins_c;
+			bool m_stderr_locked;
 	};
 #endif // STATUSBAR_HPP

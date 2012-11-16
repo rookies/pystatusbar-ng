@@ -1,0 +1,17 @@
+[general]
+  * add configuration file
+  * add command line options
+  * add some helper functions for lua
+    - split string
+    - ...
+  * add build stuff
+  * add template system
+[new plugins]
+  * mpd
+  * uptime
+  * wlan
+[plugin improvements]
+  * clock
+  * loadavg
+  * updates
+  * cputemp

@@ -25,6 +25,7 @@
 StatusBar::StatusBar()
 {
 	m_inited = false;
+	m_stderr_locked = false;
 }
 StatusBar::~StatusBar()
 {
@@ -161,7 +162,7 @@ void StatusBar::loop(void)
 								m_infoCollectionThreadJobsMajor[j] = i;
 								m_infoCollectionThreadJobsMinor[j] = id;
 								m_plugins[i].set_infocollector_running(id, true);
-								std::cerr << "Allocated infoCollector " << m_plugins[i].get_name() << "#" << id << " to thread #" << j << "." << std::endl;
+								//std::cerr << "Allocated infoCollector " << m_plugins[i].get_name() << "#" << id << " to thread #" << j << "." << std::endl;
 								break;
 							};
 						}
@@ -208,7 +209,10 @@ void *StatusBar::m_infoCollectionThread()
 					/*
 					 * Success
 					*/
+					while(m_stderr_locked);
+					m_stderr_locked = true;
 					std::cerr << m_plugins[m_infoCollectionThreadJobsMajor[_id]].get_name() << " -> infoCollector" << m_infoCollectionThreadJobsMinor[_id] << "() done by Thread #" << _id << "." << std::endl;
+					m_stderr_locked = false;
 					m_infoCollectionThreadJobsMajor[_id] = -1;
 					m_infoCollectionThreadJobsMinor[_id] = -1;
 					break;
@@ -218,7 +222,10 @@ void *StatusBar::m_infoCollectionThread()
 					*/
 					break;
 				default:
+					while(m_stderr_locked);
+					m_stderr_locked = true;
 					std::cerr << "ERROR: " << m_plugins[m_infoCollectionThreadJobsMajor[_id]].get_name() << " -> infoCollector" << m_infoCollectionThreadJobsMinor[_id] << "() failed." << std::endl;
+					m_stderr_locked = false;
 					m_plugins[m_infoCollectionThreadJobsMajor[_id]].uninit();
 			}
 		}

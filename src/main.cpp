@@ -45,36 +45,3 @@ int main (int argc, char **argv)
 	bar.uninit();
 	return 0;
 }
-/*int main (int argc, char **argv)
-{
-	lua_State *lua = luaL_newstate();
-	luaL_openlibs(lua);
-	if (luaL_loadfile(lua, "test1.lua") == 0)
-	{
-		if (lua_pcall(lua, 0, LUA_MULTRET, 0) == 0)
-		{
-			lua_getglobal(lua, "ggT");
-			lua_pushnumber(lua, 5);
-			lua_pushnumber(lua, 10);
-			if (lua_pcall(lua, 2, 1, 0) == 0)
-			{
-				std::cout << lua_tointeger(lua, -1) << std::endl;
-				lua_getglobal(lua, "func2");
-				if (lua_pcall(lua, 0, 0, 0) == 0)
-				{
-					
-				}
-				else
-					std::cerr << lua_tostring(lua, -1) << std::endl;
-			}
-			else
-				std::cerr << lua_tostring(lua, -1) << std::endl;
-		}
-		else
-			std::cerr << lua_tostring(lua, -1) << std::endl;
-	}
-	else
-		std::cerr << lua_tostring(lua, -1) << std::endl;
-	lua_close(lua);
-	return 0;
-}*/
