@@ -30,6 +30,19 @@
 #		include <lauxlib.h>
 	}
 #	include <assert.h>
+#	include <sstream>
+#	include <time.h>
+
+	class PluginInfoCollector
+	{
+		public:
+			PluginInfoCollector();
+			
+			time_t last_exec_finished;
+			bool running;
+			time_t interval;
+			bool important;
+	};
 	
 	class Plugin
 	{
@@ -43,11 +56,16 @@
 			void uninit(void);
 			std::string get_name(void);
 			int get_infocollectors_num(void);
+			int get_infocollector_to_exec(void);
+			void set_infocollector_running(int id, bool running);
+			int exec_infocollector(int id);
+			bool important_infocollectors_executed(void);
 		private:
 			bool m_active;
 			std::string m_name;
 			std::string m_file;
 			lua_State *m_lua;
 			int m_infocollectors_num;
+			PluginInfoCollector *m_infocollectors;
 	};
 #endif // PLUGIN_HPP

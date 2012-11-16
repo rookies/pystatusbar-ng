@@ -77,10 +77,16 @@ bool StatusBar::init(void)
 	 * Start threads:
 	*/
 	m_infoCollectionThreads = new pthread_t[m_config.get_infoThreadCount()];
+	m_infoCollectionThreadJobsMajor = new int[m_config.get_infoThreadCount()];
+	m_infoCollectionThreadJobsMinor = new int[m_config.get_infoThreadCount()];
+	m_infoCollectionThreadInitCounter = 0;
 	for (i=0; i < m_config.get_infoThreadCount(); i++)
 	{
-		ret = pthread_create(&m_infoCollectionThreads[i], NULL, m_infoCollectionThread_, NULL);
+		ret = pthread_create(&m_infoCollectionThreads[i], NULL, m_infoCollectionThread_, this);
+		m_infoCollectionThreadJobsMajor[i] = -1;
+		m_infoCollectionThreadJobsMinor[i] = -1;
 		assert(0 == ret);
+		while(m_infoCollectionThreadInitCounter == i);
 	}
 	/*
 	 * Return:
@@ -94,45 +100,130 @@ void StatusBar::uninit(void)
 		return;
 	delete[] m_plugins;
 	delete[] m_infoCollectionThreads;
+	delete[] m_infoCollectionThreadJobsMajor;
+	delete[] m_infoCollectionThreadJobsMinor;
 }
 void StatusBar::loop(void)
 {
 	/*
 	 * Variable declarations:
 	*/
-	int i;
+	int i, id, j;
+	bool done;
 	/*
 	 * Loop:
 	*/
 	while (true)
 	{
+		/*
+		 * Check for first exec of important info collectors:
+		*/
+		done = true;
+		for (i=0; i < m_plugins_c; i++)
+		{
+			if (!m_plugins[i].important_infocollectors_executed() && m_plugins[i].is_active())
+				done = false;
+		}
 		for (i=0; i < m_plugins_c; i++)
 		{
 			if (m_plugins[i].is_active())
 			{
-				if (i > 0)
-					std::cout << "^fg(#333333)^p(5;-2)^ro(2)^p()^fg()^p(5)";
-				std::cout << "^fg(#FFFFFF)";
-				if (!m_plugins[i].print_content())
+				/*
+				 * Print content:
+				*/
+				if (done)
 				{
-					std::cerr << "ERROR: " << m_plugins[i].get_name() << " -> getContent() failed." << std::endl;
-					m_plugins[i].uninit();
+					if (i > 0)
+						std::cout << "^fg(#333333)^p(5;-2)^ro(2)^p()^fg()^p(5)";
+					std::cout << "^fg(#FFFFFF)";
+					if (!m_plugins[i].print_content())
+					{
+						std::cerr << "ERROR: " << m_plugins[i].get_name() << " -> getContent() failed." << std::endl;
+						m_plugins[i].uninit();
+					};
 				};
+				/*
+				 * Exec info collection functions:
+				*/
+				do
+				{
+					id = m_plugins[i].get_infocollector_to_exec();
+					if (id > -1)
+					{
+						/*
+						 * We've got an info collector that needs to get executed.
+						 * So search for a thread that has nothing to do:
+						*/
+						for (j=0; j < m_config.get_infoThreadCount(); j++)
+						{
+							if (m_infoCollectionThreadJobsMajor[j] < 0 && m_infoCollectionThreadJobsMinor[j] < 0)
+							{
+								m_infoCollectionThreadJobsMajor[j] = i;
+								m_infoCollectionThreadJobsMinor[j] = id;
+								m_plugins[i].set_infocollector_running(id, true);
+								std::cerr << "Allocated infoCollector " << m_plugins[i].get_name() << "#" << id << " to thread #" << j << "." << std::endl;
+								break;
+							};
+						}
+					};
+				}
+				while (id > -1);
 			};
 		}
-		std::cout << std::endl;
-		sleep(1);
+		if (done)
+		{
+			std::cout << std::endl;
+			sleep(1);
+		}
+		else
+			usleep(100 * 1000);
 	};
 }
 void *StatusBar::m_infoCollectionThread_(void *ctx)
 {
 	return ((StatusBar *)ctx)->m_infoCollectionThread();
 }
-void *StatusBar::m_infoCollectionThread(void)
+void *StatusBar::m_infoCollectionThread()
 {
+	/*
+	 * Variable declarations:
+	*/
+	int _id;
+	/*
+	 * Init:
+	*/
+	_id = m_infoCollectionThreadInitCounter;
+	std::cerr << "Thread #" << _id << " inited." << std::endl;
+	m_infoCollectionThreadInitCounter++;
+	/*
+	 * Loop:
+	*/
 	while (true)
 	{
-		sleep(1);
+		if (m_infoCollectionThreadJobsMajor[_id] > -1 && m_infoCollectionThreadJobsMinor[_id] > -1)
+		{
+			switch (m_plugins[m_infoCollectionThreadJobsMajor[_id]].exec_infocollector(m_infoCollectionThreadJobsMinor[_id]))
+			{
+				case 0:
+					/*
+					 * Success
+					*/
+					std::cerr << m_plugins[m_infoCollectionThreadJobsMajor[_id]].get_name() << " -> infoCollector" << m_infoCollectionThreadJobsMinor[_id] << "() done by Thread #" << _id << "." << std::endl;
+					m_infoCollectionThreadJobsMajor[_id] = -1;
+					m_infoCollectionThreadJobsMinor[_id] = -1;
+					break;
+				case 2:
+					/*
+					 * m_active was false
+					*/
+					break;
+				default:
+					std::cerr << "ERROR: " << m_plugins[m_infoCollectionThreadJobsMajor[_id]].get_name() << " -> infoCollector" << m_infoCollectionThreadJobsMinor[_id] << "() failed." << std::endl;
+					m_plugins[m_infoCollectionThreadJobsMajor[_id]].uninit();
+			}
+		}
+		else
+			usleep(200*1000);
 	}
 	return 0;
 }

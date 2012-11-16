@@ -42,10 +42,13 @@
 			void loop(void);
 		private:
 			static void *m_infoCollectionThread_(void *ctx);
-			void *m_infoCollectionThread(void);
+			void *m_infoCollectionThread();
 			
 			Config m_config;
+			int m_infoCollectionThreadInitCounter;
 			pthread_t *m_infoCollectionThreads;
+			int *m_infoCollectionThreadJobsMajor;
+			int *m_infoCollectionThreadJobsMinor;
 			bool m_inited;
 			Plugin *m_plugins;
 			int m_plugins_c;

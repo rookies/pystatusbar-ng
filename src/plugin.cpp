@@ -22,16 +22,26 @@
  */
 #include "plugin.hpp"
 
+PluginInfoCollector::PluginInfoCollector()
+{
+	last_exec_finished = 0;
+	running = false;
+}
 Plugin::Plugin()
 {
 	m_active = false;
 }
 Plugin::~Plugin()
 {
-
+	
 }
 bool Plugin::init(std::string name, std::string file)
 {
+	/*
+	 * Variable declarations:
+	*/
+	int i, tmp;
+	std::stringstream ss;
 	/*
 	 * Init lua:
 	*/
@@ -47,8 +57,34 @@ bool Plugin::init(std::string name, std::string file)
 		std::cerr << lua_tostring(m_lua, -1) << std::endl;
 		return false;
 	};
+	/*
+	 * Init info collectors:
+	*/
 	lua_getglobal(m_lua, "PLUGIN_infoCollectorsNum");
 	m_infocollectors_num = lua_tointeger(m_lua, -1);
+	m_infocollectors = new PluginInfoCollector[m_infocollectors_num];
+	for (i=0; i < m_infocollectors_num; i++)
+	{
+		ss.str("");
+		ss << "PLUGIN_infoCollector";
+		ss << i;
+		ss << "_interval";
+		lua_getglobal(m_lua, ss.str().c_str());
+		tmp = lua_tointeger(m_lua, -1);
+		if (tmp > 0)
+			m_infocollectors[i].interval = tmp;
+		else
+		{
+			std::cerr << "Invalid value for " << ss.str() << "." << std::endl;
+			return false;
+		};
+		ss.str("");
+		ss << "PLUGIN_infoCollector";
+		ss << i;
+		ss << "_important";
+		lua_getglobal(m_lua, ss.str().c_str());
+		m_infocollectors[i].important = lua_toboolean(m_lua, -1);
+	}
 	/*
 	 * Set variables:
 	*/
@@ -85,6 +121,7 @@ bool Plugin::print_content(void)
 void Plugin::uninit(void)
 {
 	assert(true == m_active);
+	delete[] m_infocollectors;
 	m_active = false;
 }
 std::string Plugin::get_name(void)
@@ -96,4 +133,78 @@ int Plugin::get_infocollectors_num(void)
 {
 	assert(true == m_active);
 	return m_infocollectors_num;
+}
+int Plugin::get_infocollector_to_exec(void)
+{
+	assert(true == m_active);
+	/*
+	 * Variable declarations:
+	*/
+	int i;
+	/*
+	 * Loop:
+	*/
+	for (i=0; i < m_infocollectors_num; i++)
+	{
+		if (m_infocollectors[i].last_exec_finished == 0 || time(NULL)-m_infocollectors[i].interval > m_infocollectors[i].last_exec_finished)
+			if (!m_infocollectors[i].running)
+				return i;
+	}
+	return -1;
+}
+void Plugin::set_infocollector_running(int id, bool running)
+{
+	assert(true == m_active);
+	m_infocollectors[id].running = running;
+}
+int Plugin::exec_infocollector(int id)
+{
+	if (!m_active)
+		return 2;
+	if (id > m_infocollectors_num-1)
+		return 1;
+	/*
+	 * Variable declarations:
+	*/
+	std::stringstream ss;
+	/*
+	 * Call lua function:
+	*/
+	ss.str("");
+	ss << "infoCollector";
+	ss << id;
+	lua_getglobal(m_lua, ss.str().c_str());
+	if (lua_pcall(m_lua, 0, 1, 0) != 0)
+	{
+		std::cerr << lua_tostring(m_lua, -1) << std::endl;
+		return 1;
+	};
+	/*
+	 * Set last_exec_finished & running:
+	*/
+	m_infocollectors[id].last_exec_finished = time(NULL);
+	m_infocollectors[id].running = false;
+	/*
+	 * Return:
+	*/
+	if (lua_toboolean(m_lua, -1))
+		return 0;
+	else
+		return 1;
+}
+bool Plugin::important_infocollectors_executed(void)
+{
+	/*
+	 * Variable declarations:
+	*/
+	int i;
+	/*
+	 * Loop:
+	*/
+	for (i=0; i < m_infocollectors_num; i++)
+	{
+		if (true == m_infocollectors[i].important && 0 == m_infocollectors[i].last_exec_finished)
+			return false;
+	}
+	return true;
 }
