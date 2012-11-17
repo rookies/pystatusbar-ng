@@ -109,7 +109,7 @@ void StatusBar::loop(void)
 	/*
 	 * Variable declarations:
 	*/
-	int i, id, j;
+	int i, id, j, k;
 	bool done;
 	/*
 	 * Loop:
@@ -146,8 +146,11 @@ void StatusBar::loop(void)
 				/*
 				 * Exec info collection functions:
 				*/
+				k = 0;
 				do
 				{
+					if (!m_plugins[i].is_active())
+						break;
 					id = m_plugins[i].get_infocollector_to_exec();
 					if (id > -1)
 					{
@@ -167,8 +170,9 @@ void StatusBar::loop(void)
 							};
 						}
 					};
+					k++;
 				}
-				while (id > -1);
+				while (id > -1 && k < 5);
 			};
 		}
 		if (done)
