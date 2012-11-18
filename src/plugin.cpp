@@ -134,6 +134,12 @@ int Plugin::get_infocollectors_num(void)
 	assert(true == m_active);
 	return m_infocollectors_num;
 }
+PluginInfoCollector Plugin::get_infocollector(int index)
+{
+	assert(true == m_active);
+	assert(index <= m_infocollectors_num);
+	return m_infocollectors[index];
+}
 int Plugin::get_infocollector_to_exec(void)
 {
 	assert(true == m_active);

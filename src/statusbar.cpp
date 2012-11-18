@@ -36,7 +36,7 @@ bool StatusBar::init(void)
 	/*
 	 * Variable declarations:
 	*/
-	int i, ret;
+	int i, ret, j;
 	glob_t glob_res;
 	std::string tmp;
 	/*
@@ -68,6 +68,15 @@ bool StatusBar::init(void)
 		{
 			std::cerr << "  [" << tmp << "] (" << glob_res.gl_pathv[i] << ") done." << std::endl;
 			std::cerr << "    infoCollectorsNum: " << m_plugins[i].get_infocollectors_num() << std::endl;
+			for (j=0; j < m_plugins[i].get_infocollectors_num(); j++)
+			{
+				std::cerr << "    infoCollector" << j << std::endl;
+				std::cerr << "         Interval:  " << m_plugins[i].get_infocollector(j).interval << std::endl;
+				if (m_plugins[i].get_infocollector(j).important)
+					std::cerr << "         Important: true" << std::endl;
+				else
+					std::cerr << "         Important: false" << std::endl;
+			}
 		}
 		else
 		{
@@ -182,7 +191,7 @@ void StatusBar::loop(void)
 		}
 		else
 			usleep(100 * 1000);
-	};
+	}
 }
 void *StatusBar::m_infoCollectionThread_(void *ctx)
 {
