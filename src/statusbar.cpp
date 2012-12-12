@@ -91,9 +91,9 @@ bool StatusBar::init(void)
 	m_infoCollectionThreadInitCounter = 0;
 	for (i=0; i < m_config.get_infoThreadCount(); i++)
 	{
-		ret = pthread_create(&m_infoCollectionThreads[i], NULL, m_infoCollectionThread_, this);
 		m_infoCollectionThreadJobsMajor[i] = -1;
 		m_infoCollectionThreadJobsMinor[i] = -1;
+		ret = pthread_create(&m_infoCollectionThreads[i], NULL, m_infoCollectionThread_, this);
 		assert(0 == ret);
 		while(m_infoCollectionThreadInitCounter == i);
 	}
