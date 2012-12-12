@@ -67,15 +67,13 @@ bool StatusBar::init(void)
 		if (m_plugins[i].init(tmp, glob_res.gl_pathv[i]))
 		{
 			std::cerr << "  [" << tmp << "] (" << glob_res.gl_pathv[i] << ") done." << std::endl;
-			std::cerr << "    infoCollectorsNum: " << m_plugins[i].get_infocollectors_num() << std::endl;
 			for (j=0; j < m_plugins[i].get_infocollectors_num(); j++)
 			{
-				std::cerr << "    infoCollector" << j << std::endl;
-				std::cerr << "         Interval:  " << m_plugins[i].get_infocollector(j).interval << std::endl;
+				std::cerr << "    (" << j <<") Interval:  " << m_plugins[i].get_infocollector(j).interval << std::endl;
 				if (m_plugins[i].get_infocollector(j).important)
-					std::cerr << "         Important: true" << std::endl;
+					std::cerr << "    (" << j <<") Important: true" << std::endl;
 				else
-					std::cerr << "         Important: false" << std::endl;
+					std::cerr << "    (" << j <<") Important: false" << std::endl;
 			}
 		}
 		else
