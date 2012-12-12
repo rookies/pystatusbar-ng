@@ -81,6 +81,7 @@ bool StatusBar::init(void)
 			std::cerr << "  [" << tmp << "] (" << glob_res.gl_pathv[i] << ") FAILed." << std::endl;
 		};
 	}
+	globfree(&glob_res);
 	/*
 	 * Start threads:
 	*/
