@@ -1,5 +1,5 @@
 [general]
-  * add configuration file
+  * add plugin config options (seperate for each instance of each plugin)
   * add command line options
   * add some helper functions for lua
     - split string
@@ -11,8 +11,16 @@
   * mpd
   * uptime
   * wlan
+  * countdown
 [plugin improvements]
   * clock
+      -> configurable format
+      -> support different languages
   * loadavg
+      -> configurable format
   * updates
+      -> configurable format
+      -> configurable updatelog-file
   * cputemp
+      -> support Fahrenheit
+      -> configurable sysfs-file
