@@ -37,6 +37,7 @@ Plugin::~Plugin()
 }
 bool Plugin::init(std::string name, std::string file)
 {
+	m_active = false;
 	/*
 	 * Variable declarations:
 	*/

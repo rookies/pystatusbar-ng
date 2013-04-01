@@ -24,11 +24,7 @@
 #	define PLUGIN_HPP
 
 #	include <iostream>
-	extern "C" {
-#		include <lua.h>
-#		include <lualib.h>
-#		include <lauxlib.h>
-	}
+#	include <lua.hpp>
 #	include <assert.h>
 #	include <sstream>
 #	include <time.h>

@@ -25,9 +25,9 @@
 #	include <iostream>
 #	include <pthread.h>
 #	include <assert.h>
-#	include <glob.h>
 #	include <libgen.h>
 #	include <unistd.h>
+#	include <SimpleIni.h>
 #	include "config.hpp"
 #	include "plugin.hpp"
 
@@ -41,6 +41,7 @@
 			void uninit(void);
 			void loop(void);
 		private:
+			void m_init_plugin(unsigned int index, std::string name);
 			static void *m_infoCollectionThread_(void *ctx);
 			void *m_infoCollectionThread();
 			

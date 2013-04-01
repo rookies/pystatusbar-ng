@@ -36,52 +36,83 @@ bool StatusBar::init(void)
 	/*
 	 * Variable declarations:
 	*/
-	int i, ret, j;
-	glob_t glob_res;
-	std::string tmp;
+	int i, ret;
+	std::string tmp, tmp2;
+	CSimpleIniA ini;
+	SI_Error err;
+	size_t pos, lpos;
 	/*
-	 * TODO: Load config
+	 * Load INI file:
 	*/
-	/*
-	 * Load plugins:
-	*/
-	glob("plugins/*.lua", GLOB_TILDE, NULL, &glob_res);
-	switch (glob_res.gl_pathc)
+	ini.SetUnicode();
+	err = ini.LoadFile("config.ini");
+	if (err < 0)
 	{
-		case 0:
-			std::cerr << "No plugins found, exiting." << std::endl;
-			return false;
-			break;
-		case 1:
-			std::cerr << "1 plugin found, loading." << std::endl;
-			break;
-		default:
-			std::cerr << glob_res.gl_pathc << " plugins found, loading." << std::endl;
+		std::cerr << "Failed to load config file, exiting." << std::endl;
+		return false;
+	};
+	/*
+	 * Try to get the plugin list:
+	*/
+	tmp = ini.GetValue("general", "plugins", "");
+	if (tmp.length() == 0)
+	{
+		std::cerr << "Empty plugin list, exiting." << std::endl;
+		return false;
 	}
-	m_plugins = new Plugin[glob_res.gl_pathc];
-	m_plugins_c = glob_res.gl_pathc;
-	for (i=0; i < glob_res.gl_pathc; i++)
+	else if (tmp.find(" ") == std::string::npos)
 	{
-		tmp = basename(glob_res.gl_pathv[i]);
-		tmp = tmp.substr(0, tmp.find_last_of("."));
-		if (m_plugins[i].init(tmp, glob_res.gl_pathv[i]))
-		{
-			std::cerr << "  [" << tmp << "] (" << glob_res.gl_pathv[i] << ") done." << std::endl;
-			for (j=0; j < m_plugins[i].get_infocollectors_num(); j++)
-			{
-				std::cerr << "    (" << j <<") Interval:  " << m_plugins[i].get_infocollector(j).interval << std::endl;
-				if (m_plugins[i].get_infocollector(j).important)
-					std::cerr << "    (" << j <<") Important: true" << std::endl;
-				else
-					std::cerr << "    (" << j <<") Important: false" << std::endl;
-			}
+		/*
+		 * Single plugin
+		*/
+		m_plugins = new Plugin[1];
+		m_plugins_c = 1;
+		m_init_plugin(0, tmp);
+	}
+	else
+	{
+		/*
+		 * Plugin list, split the string:
+		*/
+		pos = 0;
+		m_plugins_c = 0;
+		do {
+			if (pos >= tmp.length())
+				break;
+			lpos = ((pos == 0)?(pos):(pos+1));
+			pos = tmp.find_first_of(" ", pos+1);
+			/*
+			 * And count them:
+			*/
+			m_plugins_c++;
 		}
-		else
-		{
-			std::cerr << "  [" << tmp << "] (" << glob_res.gl_pathv[i] << ") FAILed." << std::endl;
-		};
-	}
-	globfree(&glob_res);
+		while (pos != std::string::npos);
+		/*
+		 * Init the plugin array:
+		*/
+		m_plugins = new Plugin[m_plugins_c];
+		/*
+		 * And again, this time init them:
+		*/
+		pos = 0;
+		i = 0;
+		do {
+			if (pos >= tmp.length())
+				break;
+			lpos = ((pos == 0)?(pos):(pos+1));
+			pos = tmp.find_first_of(" ", pos+1);
+			if (pos != std::string::npos)
+			{
+				m_init_plugin(i, tmp.substr(lpos, pos-lpos));
+			}
+			else
+			{
+				m_init_plugin(i, tmp.substr(lpos));
+			};
+			i++;
+		}
+		while (pos != std::string::npos);
+	};
 	/*
 	 * Start threads:
 	*/
@@ -191,6 +222,45 @@ void StatusBar::loop(void)
 		else
 			usleep(100 * 1000);
 	}
+}
+void StatusBar::m_init_plugin(unsigned int index, std::string name)
+{
+	/*
+	 * Variable declarations:
+	*/
+	std::string tmp;
+	unsigned int i;
+	/*
+	 * Get plugin file path:
+	*/
+	tmp = "plugins/";
+	tmp.append(name);
+	tmp.append(".lua");
+	/*
+	 * Try to call the init() method:
+	*/
+	if (m_plugins[index].init(name, tmp))
+	{
+		/*
+		 * Successfull, print information:
+		*/
+		std::cerr << "  [" << name << "] (" << tmp << ") done." << std::endl;
+		for (i=0; i < m_plugins[index].get_infocollectors_num(); i++)
+		{
+			std::cerr << "    (" << i <<") Interval:  " << m_plugins[index].get_infocollector(i).interval << std::endl;
+			if (m_plugins[index].get_infocollector(i).important)
+				std::cerr << "    (" << i <<") Important: true" << std::endl;
+			else
+				std::cerr << "    (" << i <<") Important: false" << std::endl;
+		}
+	}
+	else
+	{
+		/*
+		 * Failed, print error:
+		*/
+		std::cerr << "  [" << name << "] (" << tmp << ") FAILed." << std::endl;
+	};
 }
 void *StatusBar::m_infoCollectionThread_(void *ctx)
 {
