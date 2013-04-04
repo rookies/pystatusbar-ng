@@ -22,4 +22,3 @@
       -> configurable updatelog-file
   * cputemp
       -> support Fahrenheit
-      -> configurable sysfs-file

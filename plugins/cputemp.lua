@@ -9,7 +9,11 @@ function getContent()
 end
 function infoCollector0()
 	-- open temperature file:
-	f = io.open("/sys/class/thermal/thermal_zone0/temp", "r")
+	if PLUGINCONF_file_sysfs then
+		f = io.open(PLUGINCONF_file_sysfs, "r")
+	else
+		f = io.open("/sys/class/thermal/thermal_zone0/temp", "r")
+	end
 	-- read:
 	line = f.read(f)
 	-- calculate temperature:
