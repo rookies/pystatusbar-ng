@@ -19,6 +19,11 @@
    MA 02110-1301, USA.
    
    This is a plugin for pystatusbar-ng.
+   Configuration options:
+    * updatelog: path to the file containing the updatelog in the format
+                 "<number of updates>-<UNIX timestamp of last check>", e.g. "0-1364798681"
+                 (without quotes and without newline at the end)
+        Default: /var/log/updatecheck
 ]]--
 PLUGIN_infoCollectorsNum = 1
 PLUGIN_infoCollector0_interval = 60
@@ -47,8 +52,12 @@ function getContent()
 	return upd .. " (" .. t_ .. ")"
 end
 function infoCollector0()
-	-- open updatecheck file:
-	f = io.open("/var/log/updatecheck", "r")
+	-- open updatelog file:
+	if PLUGINCONF_updatelog then
+		f = io.open(PLUGINCONF_updatelog, "r")
+	else
+		f = io.open("/var/log/updatecheck", "r")
+	end
 	-- read:
 	line = f.read(f)
 	-- split data:
