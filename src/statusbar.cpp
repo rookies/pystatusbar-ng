@@ -290,6 +290,10 @@ void StatusBar::m_init_plugin(unsigned int index, std::string name)
 		*/
 		std::cerr << "  [" << name << "] (" << tmp << ") FAILed." << std::endl;
 	};
+	/*
+	 * Remove the plugin config from heap:
+	*/
+	delete[] conf;
 }
 void *StatusBar::m_infoCollectionThread_(void *ctx)
 {
