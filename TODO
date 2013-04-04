@@ -1,15 +1,11 @@
 [general]
   * add command line options
-  * add some helper functions for lua
-    - split string
-    - pack & unpack
-    - ...
+  * add some helper functions for lua (stringsplit, pack, unpack)
   * add template system
 [new plugins]
   * mpd
   * uptime
   * wlan
-  * countdown
 [plugin improvements]
   * clock
       -> configurable format
