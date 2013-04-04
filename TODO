@@ -20,5 +20,3 @@
   * updates
       -> configurable format
       -> configurable updatelog-file
-  * cputemp
-      -> support Fahrenheit
