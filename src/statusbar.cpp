@@ -51,6 +51,10 @@ bool StatusBar::init(void)
 		return false;
 	};
 	/*
+	 * Get the number of threads to start:
+	*/
+	m_threads = atoi(m_ini.GetValue("general", "threads", "5"));
+	/*
 	 * Try to get the plugin list:
 	*/
 	tmp = m_ini.GetValue("general", "plugins", "");
@@ -115,11 +119,11 @@ bool StatusBar::init(void)
 	/*
 	 * Start threads:
 	*/
-	m_infoCollectionThreads = new pthread_t[m_config.get_infoThreadCount()];
-	m_infoCollectionThreadJobsMajor = new int[m_config.get_infoThreadCount()];
-	m_infoCollectionThreadJobsMinor = new int[m_config.get_infoThreadCount()];
+	m_infoCollectionThreads = new pthread_t[m_threads];
+	m_infoCollectionThreadJobsMajor = new int[m_threads];
+	m_infoCollectionThreadJobsMinor = new int[m_threads];
 	m_infoCollectionThreadInitCounter = 0;
-	for (i=0; i < m_config.get_infoThreadCount(); i++)
+	for (i=0; i < m_threads; i++)
 	{
 		m_infoCollectionThreadJobsMajor[i] = -1;
 		m_infoCollectionThreadJobsMinor[i] = -1;
@@ -196,7 +200,7 @@ void StatusBar::loop(void)
 						 * We've got an info collector that needs to get executed.
 						 * So search for a thread that has nothing to do:
 						*/
-						for (j=0; j < m_config.get_infoThreadCount(); j++)
+						for (j=0; j < m_threads; j++)
 						{
 							if (m_infoCollectionThreadJobsMajor[j] < 0 && m_infoCollectionThreadJobsMinor[j] < 0)
 							{

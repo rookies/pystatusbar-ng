@@ -29,7 +29,6 @@
 #	include <unistd.h>
 #	include <sstream>
 #	include <SimpleIni.h>
-#	include "config.hpp"
 #	include "plugin.hpp"
 
 	class StatusBar
@@ -45,8 +44,8 @@
 			void m_init_plugin(unsigned int index, std::string name);
 			static void *m_infoCollectionThread_(void *ctx);
 			void *m_infoCollectionThread();
-			
-			Config m_config;
+
+			unsigned int m_threads;
 			int m_infoCollectionThreadInitCounter;
 			pthread_t *m_infoCollectionThreads;
 			int *m_infoCollectionThreadJobsMajor;
