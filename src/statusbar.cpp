@@ -38,14 +38,13 @@ bool StatusBar::init(void)
 	*/
 	int i, ret;
 	std::string tmp, tmp2;
-	CSimpleIniA ini;
 	SI_Error err;
 	size_t pos, lpos;
 	/*
 	 * Load INI file:
 	*/
-	ini.SetUnicode();
-	err = ini.LoadFile("config.ini");
+	m_ini.SetUnicode();
+	err = m_ini.LoadFile("config.ini");
 	if (err < 0)
 	{
 		std::cerr << "Failed to load config file, exiting." << std::endl;
@@ -54,7 +53,7 @@ bool StatusBar::init(void)
 	/*
 	 * Try to get the plugin list:
 	*/
-	tmp = ini.GetValue("general", "plugins", "");
+	tmp = m_ini.GetValue("general", "plugins", "");
 	if (tmp.length() == 0)
 	{
 		std::cerr << "Empty plugin list, exiting." << std::endl;
@@ -228,8 +227,12 @@ void StatusBar::m_init_plugin(unsigned int index, std::string name)
 	/*
 	 * Variable declarations:
 	*/
-	std::string tmp;
+	std::string tmp, tmp3;
+	std::stringstream tmp2;
 	unsigned int i;
+	CSimpleIniA::TNamesDepend keys;
+	CSimpleIniA::TNamesDepend::const_iterator j;
+	PluginConfigPair *conf;
 	/*
 	 * Get plugin file path:
 	*/
@@ -237,9 +240,29 @@ void StatusBar::m_init_plugin(unsigned int index, std::string name)
 	tmp.append(name);
 	tmp.append(".lua");
 	/*
+	 * Construct the config section name:
+	*/
+	tmp2.str("");
+	tmp2 << "plugin" << index;
+	tmp3 = tmp2.str();
+	/*
+	 * Get the plugin configuration:
+	*/
+	m_ini.GetAllKeys(tmp3.c_str(), keys);
+	conf = new PluginConfigPair[keys.size()+1];
+	i = 0;
+	for (j = keys.begin(); j != keys.end(); j++)
+	{
+		conf[i].key = j->pItem;
+		conf[i].value = m_ini.GetValue(tmp3.c_str(), j->pItem, "");
+		i++;
+	}
+	conf[i].key = "";
+	conf[i].value = "";
+	/*
 	 * Try to call the init() method:
 	*/
-	if (m_plugins[index].init(name, tmp))
+	if (m_plugins[index].init(name, tmp, conf))
 	{
 		/*
 		 * Successfull, print information:

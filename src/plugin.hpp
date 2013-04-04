@@ -28,7 +28,7 @@
 #	include <assert.h>
 #	include <sstream>
 #	include <time.h>
-
+	
 	class PluginInfoCollector
 	{
 		public:
@@ -39,6 +39,13 @@
 			time_t interval;
 			bool important;
 	};
+
+	class PluginConfigPair
+	{
+		public:
+			std::string key;
+			std::string value;
+	};
 	
 	class Plugin
 	{
@@ -46,7 +53,7 @@
 			Plugin();
 			virtual ~Plugin();
 
-			bool init(std::string name, std::string file);
+			bool init(std::string name, std::string file, PluginConfigPair *conf);
 			bool is_active(void);
 			bool print_content(void);
 			void uninit(void);

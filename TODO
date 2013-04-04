@@ -1,5 +1,4 @@
 [general]
-  * add plugin config options (seperate for each instance of each plugin)
   * add command line options
   * add some helper functions for lua
     - split string

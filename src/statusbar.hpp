@@ -27,6 +27,7 @@
 #	include <assert.h>
 #	include <libgen.h>
 #	include <unistd.h>
+#	include <sstream>
 #	include <SimpleIni.h>
 #	include "config.hpp"
 #	include "plugin.hpp"
@@ -54,5 +55,6 @@
 			Plugin *m_plugins;
 			int m_plugins_c;
 			bool m_stderr_locked;
+			CSimpleIniA m_ini;
 	};
 #endif // STATUSBAR_HPP

@@ -35,7 +35,7 @@ Plugin::~Plugin()
 {
 	
 }
-bool Plugin::init(std::string name, std::string file)
+bool Plugin::init(std::string name, std::string file, PluginConfigPair *conf)
 {
 	m_active = false;
 	/*
@@ -48,6 +48,19 @@ bool Plugin::init(std::string name, std::string file)
 	*/
 	m_lua = luaL_newstate();
 	luaL_openlibs(m_lua);
+	/*
+	 * Push the plugin configuration to the lua stack:
+	*/
+	for (i=0; conf[i].key != ""; i++)
+	{
+		ss.str("");
+		ss << "PLUGINCONF_" << conf[i].key;
+		lua_pushstring(m_lua, conf[i].value.c_str());
+		lua_setglobal(m_lua, ss.str().c_str());
+	}
+	/*
+	 * Load the plugin file:
+	*/
 	if (luaL_loadfile(m_lua, file.c_str()) != 0)
 	{
 		std::cerr << lua_tostring(m_lua, -1) << std::endl;
