@@ -19,6 +19,9 @@
    MA 02110-1301, USA.
    
    This is a plugin for pystatusbar-ng.
+   Configuration options:
+    * goal: The goal of the countdown as UNIX timestamp
+        Default: far, far away
 ]]--
 PLUGIN_infoCollectorsNum = 0
 
