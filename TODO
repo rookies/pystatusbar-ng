@@ -13,7 +13,6 @@
 [plugin improvements]
   * clock
       -> configurable format
-      -> support different languages
   * loadavg
       -> configurable format
   * updates

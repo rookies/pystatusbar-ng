@@ -19,26 +19,75 @@
    MA 02110-1301, USA.
    
    This is a plugin for pystatusbar-ng.
+   Configuration options:
+    * dateformat: Format of the date output (goes to os.date() of lua)
+        Default: %d.%m.%Y, %H:%M:%S
+    * day_monday: Translation of 'Monday'
+        Default: Monday
+    * day_tuesday: Translation of 'Tuesday'
+        Default: Tuesday
+    * day_wednesday: Translation of 'Wednesday'
+        Default: Wednesday
+    * day_thursday: Translation of 'Thursday'
+        Default: Thursday
+    * day_friday: Translation of 'Friday'
+        Default: Friday
+    * day_saturday: Translation of 'Saturday'
+        Default: Saturday
+    * day_sunday: Translation of 'Sunday'
+        Default: Sunday
 ]]--
 PLUGIN_infoCollectorsNum = 0
 
 function getContent()
-	x = os.date("%d.%m.%Y, %H:%M:%S")
-	y = os.date("%w")
-	if y == "1" then
-		d = "Montag"
-	elseif y == "2" then
-		d = "Dienstag"
-	elseif y == "3" then
-		d = "Mittwoch"
-	elseif y == "4" then
-		d = "Donnerstag"
-	elseif y == "5" then
-		d = "Freitag"
-	elseif y == "6" then
-		d = "Samstag"
-	elseif y == "0" then
-		d = "Sonntag"
+	if PLUGINCONF_dateformat then
+		x = os.date(PLUGINCONF_dateformat)
+	else
+		x = os.date("%d.%m.%Y, %H:%M:%S")
+	end
+	y = tonumber(os.date("%w"))
+	if y == 1 then
+		if PLUGINCONF_day_monday then
+			d = PLUGINCONF_day_monday
+		else
+			d = "Monday"
+		end
+	elseif y == 2 then
+		if PLUGINCONF_day_tuesday then
+			d = PLUGINCONF_day_tuesday
+		else
+			d = "Tuesday"
+		end
+	elseif y == 3 then
+		if PLUGINCONF_day_wednesday then
+			d = PLUGINCONF_day_wednesday
+		else
+			d = "Wednesday"
+		end
+	elseif y == 4 then
+		if PLUGINCONF_day_thursday then
+			d = PLUGINCONF_day_thursday
+		else
+			d = "Thursday"
+		end
+	elseif y == 5 then
+		if PLUGINCONF_day_friday then
+			d = PLUGINCONF_day_friday
+		else
+			d = "Friday"
+		end
+	elseif y == 6 then
+		if PLUGINCONF_day_saturday then
+			d = PLUGINCONF_day_saturday
+		else
+			d = "Saturday"
+		end
+	elseif y == 0 then
+		if PLUGINCONF_day_sunday then
+			d = PLUGINCONF_day_sunday
+		else
+			d = "Sunday"
+		end
 	end
 	return x .. " (" .. d .. ")"
 end
