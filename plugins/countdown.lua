@@ -32,6 +32,14 @@ else
 	goal = 32901067722 -- in thousand years
 end
 
+function formatTwoDigits(number)
+	if number < 10 then
+		return "0" .. tostring(number)
+	else
+		return tostring(number)
+	end
+end
+
 function getContent()
 	-- Calculate the remaining time in seconds:
 	t = goal-os.time()
@@ -40,17 +48,17 @@ function getContent()
 	end
 	-- Format:
 	if t < 60 then
-		return t .. "s"
+		return formatTwoDigits(t) .. "s"
 	elseif t < 3600 then
 		m = math.floor(t/60)
 		t = t-(m*60)
-		return m .. "m " .. t .. "s"
+		return formatTwoDigits(m) .. "m " .. formatTwoDigits(t) .. "s"
 	elseif t < 86400 then
 		m = math.floor(t/60)
 		t = t-(m*60)
 		h = math.floor(m/60)
 		m = m-(h*60)
-		return h .. "h " .. m .. "m " .. t .. "s"
+		return formatTwoDigits(h) .. "h " .. formatTwoDigits(m) .. "m " .. formatTwoDigits(t) .. "s"
 	else
 		m = math.floor(t/60)
 		t = t-(m*60)
@@ -58,6 +66,6 @@ function getContent()
 		m = m-(h*60)
 		d = math.floor(h/24)
 		h = h-(d*24)
-		return d .. "d " .. h .. "h " .. m .. "m " .. t .. "s"
+		return d .. "d " .. formatTwoDigits(h) .. "h " .. formatTwoDigits(m) .. "m " .. formatTwoDigits(t) .. "s"
 	end
 end
