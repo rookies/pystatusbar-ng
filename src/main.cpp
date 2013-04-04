@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA 02110-1301, USA.
  * 
- * g++ -o pystatusbar-ng `pkg-config --cflags --libs lua` -lpthread src/*.cpp
+ * 
  */
 #include "main.hpp"
 

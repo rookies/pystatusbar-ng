@@ -4,7 +4,6 @@
     - split string
     - pack & unpack
     - ...
-  * add build stuff
   * add template system
 [new plugins]
   * mpd
