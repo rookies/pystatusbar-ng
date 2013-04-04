@@ -143,7 +143,7 @@ std::string Plugin::get_name(void)
 	assert(true == m_active);
 	return m_name;
 }
-int Plugin::get_infocollectors_num(void)
+unsigned int Plugin::get_infocollectors_num(void)
 {
 	assert(true == m_active);
 	return m_infocollectors_num;

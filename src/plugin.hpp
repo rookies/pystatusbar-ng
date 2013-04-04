@@ -58,7 +58,7 @@
 			bool print_content(void);
 			void uninit(void);
 			std::string get_name(void);
-			int get_infocollectors_num(void);
+			unsigned int get_infocollectors_num(void);
 			PluginInfoCollector get_infocollector(int index);
 			int get_infocollector_to_exec(void);
 			void set_infocollector_running(int id, bool running);

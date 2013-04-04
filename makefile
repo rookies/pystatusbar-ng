@@ -23,8 +23,9 @@ RM=rm
 CXX=g++
 
 OBJ=build/main.o build/plugin.o build/statusbar.o
+HEADERS=src/main.hpp src/plugin.hpp src/statusbar.hpp include/SimpleIni.h include/ConvertUTF.h
 LIBS=lua
-CXXFLAGS=-I include -c `pkg-config --cflags $(LIBS)`
+CXXFLAGS=-I include -c -Wall `pkg-config --cflags $(LIBS)`
 LDFLAGS=-lpthread `pkg-config --libs $(LIBS)`
 
 pystatusbar-ng : build $(OBJ)
@@ -36,5 +37,5 @@ clean :
 build :
 	mkdir ./build/
 
-build/%.o : src/%.cpp
+build/%.o : src/%.cpp $(HEADERS)
 	$(CXX) $(CXXFLAGS) $< -o $@

@@ -36,7 +36,8 @@ bool StatusBar::init(void)
 	/*
 	 * Variable declarations:
 	*/
-	int i, ret;
+	unsigned int i;
+	int ret;
 	std::string tmp, tmp2;
 	SI_Error err;
 	size_t pos, lpos;
@@ -151,7 +152,8 @@ void StatusBar::loop(void)
 	/*
 	 * Variable declarations:
 	*/
-	int i, id, j, k;
+	unsigned int i, j, k;
+	int id;
 	bool done;
 	/*
 	 * Loop:

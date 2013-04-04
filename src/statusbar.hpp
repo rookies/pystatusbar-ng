@@ -46,13 +46,13 @@
 			void *m_infoCollectionThread();
 
 			unsigned int m_threads;
-			int m_infoCollectionThreadInitCounter;
+			unsigned int m_infoCollectionThreadInitCounter;
 			pthread_t *m_infoCollectionThreads;
 			int *m_infoCollectionThreadJobsMajor;
 			int *m_infoCollectionThreadJobsMinor;
 			bool m_inited;
 			Plugin *m_plugins;
-			int m_plugins_c;
+			unsigned int m_plugins_c;
 			bool m_stderr_locked;
 			CSimpleIniA m_ini;
 	};
