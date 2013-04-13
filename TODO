@@ -4,7 +4,6 @@
   * add template system
 [new plugins]
   * mpd
-  * uptime
 [plugin improvements]
   * clock
       -> configurable format
@@ -17,4 +16,8 @@
   * countdown
       -> configurable format
   * wifi
+      -> configurable format
+  * uptime
+      -> configurable format
+  * dayuptime
       -> configurable format

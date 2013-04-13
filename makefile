@@ -29,8 +29,9 @@ OBJ=build/main.o build/plugin.o build/statusbar.o
 HEADERS=src/main.hpp src/plugin.hpp src/statusbar.hpp include/SimpleIni.h include/ConvertUTF.h
 LIBS=lua5.1
 LIBS_LUAMODS=lua5.1
-LUAMODS=luamods/subprocess.so
-LM_SUBPROCESS=src/luamods/liolib-copy.c src/luamods/subprocess.c
+LUAMODS=luamods/subprocess.so luamods/struct.so
+LM_SUBPROCESS=src/luamods/subprocess/liolib-copy.c src/luamods/subprocess/subprocess.c
+LM_STRUCT=src/luamods/struct/struct.c
 CXXFLAGS=-I include -c -Wall `$(PKGCONFIG) --cflags $(LIBS)`
 LDFLAGS=-lpthread `pkg-config --libs $(LIBS)`
 
@@ -56,4 +57,7 @@ luamods :
 	$(MKDIR) ./luamods/
 
 luamods/subprocess.so : $(LM_SUBPROCESS)
-	$(CC) -fPIC -shared -DOS_POSIX -o $@ `$(PKGCONFIG)  --cflags --libs $(LIBS_LUAMODS)` $(LM_SUBPROCESS)
+	$(CC) -fPIC -shared -DOS_POSIX -o $@ `$(PKGCONFIG) --cflags --libs $(LIBS_LUAMODS)` $(LM_SUBPROCESS)
+
+luamods/struct.so : $(LM_STRUCT)
+	$(CC) -fPIC -shared -D_POSIX_SOURCE -DSTRUCT_INT="long long" -O2 -o $@ `$(PKGCONFIG) --cflags --libs $(LIBS_LUAMODS)` $(LM_STRUCT)
