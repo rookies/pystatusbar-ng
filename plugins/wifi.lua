@@ -34,9 +34,10 @@ if PLUGINCONF_interface then
 else
 	iface = "wlan0"
 end
+data = ""
 
 function getContent()
-	return "abc"
+	return data
 end
 function infoCollector0()
 	-- Exec iwconfig:
@@ -48,7 +49,7 @@ function infoCollector0()
 	p:wait()
 	-- Check exitcode:
 	if not p.exitcode == 0 then
-		return false
+		data = "Error"
 	end
 	-- Read from process stdout:
 	i = 0
@@ -58,12 +59,20 @@ function infoCollector0()
 			break
 		end
 		if i == 0 then
-			-- ESSID line
+			-- Get ESSID:
+			essid = l:match('%b""'):sub(2):sub(1, -2)
 		elseif i == 5 then
-			-- Link Quality line
+			-- Get Link Quality:
+			q = l:match('%b= '):sub(2):sub(1, -2)
+			q_full = tonumber(q:sub(q:find('/')+1, -1))
+			q = tonumber(q:sub(0, q:find('/')-1))
+			-- Calculate percent:
+			quality = math.floor((q/q_full)*100)
 		end
 		i = i+1
 	end
+	-- Set data variable:
+	data = essid .. " (" .. tostring(quality) .. "%)"
 	-- Return success:
 	return true
 end

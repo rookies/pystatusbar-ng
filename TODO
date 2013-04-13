@@ -5,7 +5,6 @@
 [new plugins]
   * mpd
   * uptime
-  * wlan
 [plugin improvements]
   * clock
       -> configurable format
@@ -16,4 +15,6 @@
   * cputemp
       -> configurable format
   * countdown
+      -> configurable format
+  * wifi
       -> configurable format
