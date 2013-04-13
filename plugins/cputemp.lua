@@ -44,7 +44,7 @@ function infoCollector0()
 		f = io.open("/sys/class/thermal/thermal_zone0/temp", "r")
 	end
 	-- read:
-	line = f.read(f)
+	line = f:read()
 	-- calculate temperature:
 	t_c = line/1000
 	t_f = (t_c*1.8)+32
@@ -55,7 +55,7 @@ function infoCollector0()
 		data = t_c .. "°C"
 	end
 	-- close file:
-	f.close(f)
+	f:close()
 	-- return success:
 	return true
 end

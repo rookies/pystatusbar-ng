@@ -1,5 +1,5 @@
 --[[
-   clock.lua
+   wifi.lua
    
    Copyright 2013 Robert Knauer <robert@privatdemail.net>
    
