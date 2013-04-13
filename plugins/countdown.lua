@@ -48,17 +48,17 @@ function getContent()
 	end
 	-- Format:
 	if t < 60 then
-		return formatTwoDigits(t) .. "s"
+		return formatTwoDigits(t)
 	elseif t < 3600 then
 		m = math.floor(t/60)
 		t = t-(m*60)
-		return formatTwoDigits(m) .. "m " .. formatTwoDigits(t) .. "s"
+		return formatTwoDigits(m) .. ":" .. formatTwoDigits(t)
 	elseif t < 86400 then
 		m = math.floor(t/60)
 		t = t-(m*60)
 		h = math.floor(m/60)
 		m = m-(h*60)
-		return formatTwoDigits(h) .. "h " .. formatTwoDigits(m) .. "m " .. formatTwoDigits(t) .. "s"
+		return formatTwoDigits(h) .. ":" .. formatTwoDigits(m) .. ":" .. formatTwoDigits(t)
 	else
 		m = math.floor(t/60)
 		t = t-(m*60)
@@ -66,6 +66,6 @@ function getContent()
 		m = m-(h*60)
 		d = math.floor(h/24)
 		h = h-(d*24)
-		return d .. "d " .. formatTwoDigits(h) .. "h " .. formatTwoDigits(m) .. "m " .. formatTwoDigits(t) .. "s"
+		return d .. "d " .. formatTwoDigits(h) .. ":" .. formatTwoDigits(m) .. ":" .. formatTwoDigits(t)
 	end
 end

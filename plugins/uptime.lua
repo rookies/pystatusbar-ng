@@ -39,17 +39,17 @@ function getContent()
 	val = math.floor(tonumber(l:sub(0, l:find(' ')-1)))
 	-- Format it:
 	if val < 60 then
-		return formatTwoDigits(val) .. "s"
+		return formatTwoDigits(val)
 	elseif val < 3600 then
 		m = math.floor(val/60)
 		val = val-(m*60)
-		return formatTwoDigits(m) .. "m " .. formatTwoDigits(val) .. "s"
+		return formatTwoDigits(m) .. ":" .. formatTwoDigits(val)
 	elseif val < 86400 then
 		m = math.floor(val/60)
 		val = val-(m*60)
 		h = math.floor(m/60)
 		m = m-(h*60)
-		return formatTwoDigits(h) .. "h " .. formatTwoDigits(m) .. "m " .. formatTwoDigits(val) .. "s"
+		return formatTwoDigits(h) .. ":" .. formatTwoDigits(m) .. ":" .. formatTwoDigits(val)
 	else
 		m = math.floor(val/60)
 		val = val-(m*60)
@@ -57,6 +57,6 @@ function getContent()
 		m = m-(h*60)
 		d = math.floor(h/24)
 		h = h-(d*24)
-		return d .. "d " .. formatTwoDigits(h) .. "h " .. formatTwoDigits(m) .. "m " .. formatTwoDigits(val) .. "s"
+		return d .. "d " .. formatTwoDigits(h) .. ":" .. formatTwoDigits(m) .. ":" .. formatTwoDigits(val)
 	end
 end
