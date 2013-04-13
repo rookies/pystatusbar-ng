@@ -21,21 +21,39 @@
 
 RM=rm
 CXX=g++
+CC=gcc
+MKDIR=mkdir
+PKGCONFIG=pkg-config
 
 OBJ=build/main.o build/plugin.o build/statusbar.o
 HEADERS=src/main.hpp src/plugin.hpp src/statusbar.hpp include/SimpleIni.h include/ConvertUTF.h
-LIBS=lua
-CXXFLAGS=-I include -c -Wall `pkg-config --cflags $(LIBS)`
+LIBS=lua5.1
+LIBS_LUAMODS=lua5.1
+LUAMODS=luamods/subprocess.so
+LM_SUBPROCESS=src/luamods/liolib-copy.c src/luamods/subprocess.c
+CXXFLAGS=-I include -c -Wall `$(PKGCONFIG) --cflags $(LIBS)`
 LDFLAGS=-lpthread `pkg-config --libs $(LIBS)`
+
+all : pystatusbar-ng mods
 
 pystatusbar-ng : build $(OBJ)
 	$(CXX) $(LDFLAGS) $(OBJ) -o $@
 
 clean :
 	$(RM) -rf ./build/
+	$(RM) -rf ./luamods/
+	$(RM) -f ./pystatusbar-ng
 
 build :
-	mkdir ./build/
+	$(MKDIR) ./build/
 
 build/%.o : src/%.cpp $(HEADERS)
 	$(CXX) $(CXXFLAGS) $< -o $@
+
+mods : luamods $(LUAMODS)
+
+luamods : 
+	$(MKDIR) ./luamods/
+
+luamods/subprocess.so : $(LM_SUBPROCESS)
+	$(CC) -fPIC -shared -DOS_POSIX -o $@ `$(PKGCONFIG)  --cflags --libs $(LIBS_LUAMODS)` $(LM_SUBPROCESS)
