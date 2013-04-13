@@ -29,11 +29,23 @@ int main (int argc, char **argv)
 	 * Variable declarations:
 	*/
 	StatusBar bar;
+	std::string confpath;
+	/*
+	 * Get the config path:
+	*/
+	if (argc < 2)
+	{
+		confpath = "config.ini";
+	}
+	else
+	{
+		confpath = argv[1];
+	};
 	/*
 	 * Init:
 	*/
 	std::cout << "Loading ..." << std::endl;
-	if (!bar.init())
+	if (!bar.init(confpath))
 		return 1;
 	/*
 	 * Start main loop:

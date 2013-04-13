@@ -37,7 +37,7 @@
 			StatusBar();
 			virtual ~StatusBar();
 
-			bool init(void);
+			bool init(std::string confpath);
 			void uninit(void);
 			void loop(void);
 		private:

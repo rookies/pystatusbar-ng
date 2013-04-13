@@ -31,7 +31,7 @@ StatusBar::~StatusBar()
 {
 
 }
-bool StatusBar::init(void)
+bool StatusBar::init(std::string confpath)
 {
 	/*
 	 * Variable declarations:
@@ -45,7 +45,7 @@ bool StatusBar::init(void)
 	 * Load INI file:
 	*/
 	m_ini.SetUnicode();
-	err = m_ini.LoadFile("config.ini");
+	err = m_ini.LoadFile(confpath.c_str());
 	if (err < 0)
 	{
 		std::cerr << "Failed to load config file, exiting." << std::endl;
