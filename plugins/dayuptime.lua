@@ -22,6 +22,9 @@
    Configuration options:
     * uptimelog: path to the uptimelog file written by a cronjob
         Default: /var/log/uptimestats.bin
+   Template options:
+    * uptime: The formatted uptime
+    * uptime_raw: The uptime in minutes
 ]]--
 PLUGIN_infoCollectorsNum = 1
 PLUGIN_infoCollector0_interval = 60
@@ -33,6 +36,11 @@ if PLUGINCONF_uptimelog then
 	uptimelog = PLUGINCONF_uptimelog
 else
 	uptimelog = "/var/log/uptimestats.bin"
+end
+if PLUGINCONF_template then
+	tpl = PLUGINCONF_template
+else
+	tpl = "return uptime"
 end
 
 data = ""
@@ -98,13 +106,16 @@ function infoCollector0()
 		end
 	end
 	-- Format the time:
+	uptime_raw = uptime
 	if uptime < 60 then
-		data = "00:" .. formatTwoDigits(uptime)
+		uptime = "00:" .. formatTwoDigits(uptime)
 	else
 		h = math.floor(uptime/60)
 		uptime = uptime-(h*60)
-		data = formatTwoDigits(h) .. ":" .. formatTwoDigits(uptime)
+		uptime = formatTwoDigits(h) .. ":" .. formatTwoDigits(uptime)
 	end
+	f_ = loadstring(tpl)
+	data = f_()
 	-- Close file:
 	f:close()
 	-- Return success:

@@ -1,23 +1,2 @@
-[general]
-  * add template system
 [new plugins]
   * mpd
-[plugin improvements]
-  * clock
-      -> configurable format
-  * loadavg
-      -> configurable format
-  * updates
-      -> configurable format
-  * cputemp
-      -> configurable format
-  * countdown
-      -> configurable format
-  * wifi
-      -> configurable format
-  * uptime
-      -> configurable format
-  * dayuptime
-      -> configurable format
-  * wettercom
-      -> configurable format

@@ -22,6 +22,9 @@
    Configuration options:
     * goal: The goal of the countdown as UNIX timestamp
         Default: far, far away
+   Template options:
+    * remaining: The formatted, remaining time
+    * remaining_raw: The remaining time in seconds
 ]]--
 PLUGIN_infoCollectorsNum = 0
 
@@ -30,6 +33,11 @@ if PLUGINCONF_goal then
 	goal = tonumber(PLUGINCONF_goal)
 else
 	goal = 32901067722 -- in thousand years
+end
+if PLUGINCONF_template then
+	tpl = PLUGINCONF_template
+else
+	tpl = "return remaining"
 end
 
 function formatTwoDigits(number)
@@ -47,18 +55,19 @@ function getContent()
 		t = 0
 	end
 	-- Format:
+	remaining_raw = t
 	if t < 60 then
-		return formatTwoDigits(t)
+		remaining = formatTwoDigits(t)
 	elseif t < 3600 then
 		m = math.floor(t/60)
 		t = t-(m*60)
-		return formatTwoDigits(m) .. ":" .. formatTwoDigits(t)
+		remaining = formatTwoDigits(m) .. ":" .. formatTwoDigits(t)
 	elseif t < 86400 then
 		m = math.floor(t/60)
 		t = t-(m*60)
 		h = math.floor(m/60)
 		m = m-(h*60)
-		return formatTwoDigits(h) .. ":" .. formatTwoDigits(m) .. ":" .. formatTwoDigits(t)
+		remaining = formatTwoDigits(h) .. ":" .. formatTwoDigits(m) .. ":" .. formatTwoDigits(t)
 	else
 		m = math.floor(t/60)
 		t = t-(m*60)
@@ -66,6 +75,8 @@ function getContent()
 		m = m-(h*60)
 		d = math.floor(h/24)
 		h = h-(d*24)
-		return d .. "d " .. formatTwoDigits(h) .. ":" .. formatTwoDigits(m) .. ":" .. formatTwoDigits(t)
+		remaining = d .. "d " .. formatTwoDigits(h) .. ":" .. formatTwoDigits(m) .. ":" .. formatTwoDigits(t)
 	end
+	f = loadstring(tpl)
+	return f()
 end

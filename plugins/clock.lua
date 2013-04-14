@@ -36,8 +36,17 @@
         Default: Saturday
     * day_sunday: Translation of 'Sunday'
         Default: Sunday
+   Template variables:
+    * now: Formatted date string
+    * day: Translated day
 ]]--
 PLUGIN_infoCollectorsNum = 0
+
+if PLUGINCONF_template then
+	tpl = PLUGINCONF_template
+else
+	tpl = "return now .. ' (' .. day .. ')'"
+end
 
 function getContent()
 	if PLUGINCONF_dateformat then
@@ -89,5 +98,8 @@ function getContent()
 			d = "Sunday"
 		end
 	end
-	return x .. " (" .. d .. ")"
+	now = x
+	day = d
+	f = loadstring(tpl)
+	return f()
 end

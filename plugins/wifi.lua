@@ -22,6 +22,9 @@
    Configuration options:
     * interface: The network interface to check
         Default: wlan0
+   Template options:
+    * essid: The network ESSID
+    * quality: The network quality in percent
 ]]--
 PLUGIN_infoCollectorsNum = 1
 PLUGIN_infoCollector0_interval = 10
@@ -34,6 +37,12 @@ if PLUGINCONF_interface then
 else
 	iface = "wlan0"
 end
+if PLUGINCONF_template then
+	tpl = PLUGINCONF_template
+else
+	tpl = "return essid .. ' (' .. quality .. '%)'"
+end
+
 data = ""
 
 function getContent()
@@ -72,7 +81,8 @@ function infoCollector0()
 		i = i+1
 	end
 	-- Set data variable:
-	data = essid .. " (" .. tostring(quality) .. "%)"
+	f = loadstring(tpl)
+	data = f()
 	-- Return success:
 	return true
 end

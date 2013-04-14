@@ -26,12 +26,21 @@
     * fahrenheit: 1 if you want the temperature in degrees Fahrenheit
                   0 if you want the temperature in degrees Celsius
         Default: 0
+   Template options:
+    * temperature: The temperature
+    * unit: The unit (°C or °F)
 ]]--
 PLUGIN_infoCollectorsNum = 1
 PLUGIN_infoCollector0_interval = 10
 PLUGIN_infoCollector0_important = true
 
 data = ""
+
+if PLUGINCONF_template then
+	tpl = PLUGINCONF_template
+else
+	tpl = "return temperature .. unit"
+end
 
 function getContent()
 	return data
@@ -50,10 +59,14 @@ function infoCollector0()
 	t_f = (t_c*1.8)+32
 	-- set data:
 	if PLUGINCONF_fahrenheit and PLUGINCONF_fahrenheit == "1" then
-		data = t_f .. "°F"
+		temperature = t_f
+		unit = "°F"
 	else
-		data = t_c .. "°C"
+		temperature = t_c
+		unit = "°C"
 	end
+	f_ = loadstring(tpl)
+	data = f_()
 	-- close file:
 	f:close()
 	-- return success:

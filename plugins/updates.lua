@@ -24,32 +24,42 @@
                  "<number of updates>-<UNIX timestamp of last check>", e.g. "0-1364798681"
                  (without quotes and without newline at the end)
         Default: /var/log/updatecheck
+   Template options:
+    * updates: The number of new updates
+    * lastcheck: The formatted time since last check
 ]]--
 PLUGIN_infoCollectorsNum = 1
 PLUGIN_infoCollector0_interval = 60
 PLUGIN_infoCollector0_important = true
 
-upd = 0
+updates = 0
 t = 0
+
+if PLUGINCONF_template then
+	tpl = PLUGINCONF_template
+else
+	tpl = "return updates .. ' (' .. lastcheck .. ')'"
+end
 
 function getContent()
 	x = os.time()-t
 	if x < 60 then
-		t_ = x
+		lastcheck = x
 	elseif x < 3600 then
 		minutes = math.floor(x/60)
-		t_ = string.format("%0.2d:%0.2d", minutes, (x-minutes*60))
+		lastcheck = string.format("%0.2d:%0.2d", minutes, (x-minutes*60))
 	elseif x < 86400 then
 		hours = math.floor(x/3600)
 		minutes = math.floor((x-hours*3600)/60)
-		t_ = string.format("%d:%0.2d:%0.2d", hours, minutes, (x-hours*3600-minutes*60))
+		lastcheck = string.format("%d:%0.2d:%0.2d", hours, minutes, (x-hours*3600-minutes*60))
 	else
 		days = math.floor(x/86400)
 		hours = math.floor((x-days*86400)/3600)
 		minutes = math.floor((x-days*86400-hours*3600)/60)
-		t_ = string.format("%dd %d:%0.2d:%0.2d", days, hours, minutes, (x-days*86400-hours*3600-minutes*60))
+		lastcheck = string.format("%dd %d:%0.2d:%0.2d", days, hours, minutes, (x-days*86400-hours*3600-minutes*60))
 	end
-	return upd .. " (" .. t_ .. ")"
+	f = loadstring(tpl)
+	return f()
 end
 function infoCollector0()
 	-- open updatelog file:
@@ -61,7 +71,7 @@ function infoCollector0()
 	-- read:
 	line = f.read(f)
 	-- split data:
-	upd = string.sub(line, 0, string.find(line, "-")-1)
+	updates = string.sub(line, 0, string.find(line, "-")-1)
 	t = string.sub(line, string.find(line, "-")+1)
 	-- close file:
 	f.close(f)

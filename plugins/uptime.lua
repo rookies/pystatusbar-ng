@@ -19,8 +19,17 @@
    MA 02110-1301, USA.
    
    This is a plugin for pystatusbar-ng.
+   Template options:
+    * uptime: The formatted uptime
+    * uptime_raw: The uptime in seconds
 ]]--
 PLUGIN_infoCollectorsNum = 0
+
+if PLUGINCONF_template then
+	tpl = PLUGINCONF_template
+else
+	tpl = "return uptime"
+end
 
 function formatTwoDigits(number)
 	if number < 10 then
@@ -38,18 +47,19 @@ function getContent()
 	-- Get the first value:
 	val = math.floor(tonumber(l:sub(0, l:find(' ')-1)))
 	-- Format it:
+	uptime_raw = val
 	if val < 60 then
-		return formatTwoDigits(val)
+		uptime = formatTwoDigits(val)
 	elseif val < 3600 then
 		m = math.floor(val/60)
 		val = val-(m*60)
-		return formatTwoDigits(m) .. ":" .. formatTwoDigits(val)
+		uptime = formatTwoDigits(m) .. ":" .. formatTwoDigits(val)
 	elseif val < 86400 then
 		m = math.floor(val/60)
 		val = val-(m*60)
 		h = math.floor(m/60)
 		m = m-(h*60)
-		return formatTwoDigits(h) .. ":" .. formatTwoDigits(m) .. ":" .. formatTwoDigits(val)
+		uptime = formatTwoDigits(h) .. ":" .. formatTwoDigits(m) .. ":" .. formatTwoDigits(val)
 	else
 		m = math.floor(val/60)
 		val = val-(m*60)
@@ -57,6 +67,8 @@ function getContent()
 		m = m-(h*60)
 		d = math.floor(h/24)
 		h = h-(d*24)
-		return d .. "d " .. formatTwoDigits(h) .. ":" .. formatTwoDigits(m) .. ":" .. formatTwoDigits(val)
+		uptime = d .. "d " .. formatTwoDigits(h) .. ":" .. formatTwoDigits(m) .. ":" .. formatTwoDigits(val)
 	end
+	f = loadstring(tpl)
+	return f()
 end

@@ -29,6 +29,10 @@
 	* fahrenheit: 1 if you want the temperature in degrees Fahrenheit
                   0 if you want the temperature in degrees Celsius
         Default: 0
+   Template options:
+    * city: The city where the weather is from
+    * temperature: The temperature
+    * unit: The unit (°C or °F)
 ]]--
 PLUGIN_infoCollectorsNum = 1
 PLUGIN_infoCollector0_interval = 300
@@ -53,6 +57,12 @@ if PLUGINCONF_citycode then
 else
 	citycode = "DE0001020074"
 end
+if PLUGINCONF_template then
+	tpl = PLUGINCONF_template
+else
+	tpl = "return city .. ': ' .. temperature .. unit"
+end
+
 -- Create md5 hash:
 hash = md5.sumhexa(project .. apikey .. citycode)
 -- Concat the URL components:
@@ -105,10 +115,14 @@ function infoCollector0()
 	city = content:find("name")[1]
 	-- Concat all together:
 	if PLUGINCONF_fahrenheit and PLUGINCONF_fahrenheit == "1" then
-		data = city .. ": " .. ((temp*1.8)+32) .. "°F"
+		temperature = ((temp*1.8)+32)
+		unit = "°F"
 	else
-		data = city .. ": " .. temp .. "°C"
+		temperature = temp
+		unit = "°C"
 	end
+	f = loadstring(tpl)
+	data = f()
 	-- Return success:
 	return true
 end

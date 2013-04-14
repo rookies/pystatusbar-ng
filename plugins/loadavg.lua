@@ -19,10 +19,20 @@
    MA 02110-1301, USA.
    
    This is a plugin for pystatusbar-ng.
+   Template options:
+    * load1: The 1 minute load average
+    * load5: The 5 minutes load average
+    * load15: The 15 minutes load average
 ]]--
 PLUGIN_infoCollectorsNum = 1
 PLUGIN_infoCollector0_interval = 10
 PLUGIN_infoCollector0_important = true
+
+if PLUGINCONF_template then
+	tpl = PLUGINCONF_template
+else
+	tpl = "return load1 .. ' ' .. load5 .. ' ' .. load15"
+end
 
 data = ""
 
@@ -47,7 +57,11 @@ function infoCollector0()
 		line = string.gsub(line, " ", "", 1)
 		acount = acount+1
 	end
-	data = array[0] .. " " .. array[1] .. " " .. array[2]
+	load1 = tonumber(array[0])
+	load5 = tonumber(array[1])
+	load15 = tonumber(array[2])
+	f_ = loadstring(tpl)
+	data = f_()
 	-- close file:
 	f.close(f)
 	-- return success:
