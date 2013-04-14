@@ -45,6 +45,8 @@ MKDIR=mkdir
 PKGCONFIG=pkg-config
 CP=cp
 INSTALL=install
+CAT=cat
+SED=sed
 
 OBJ=build/main.o \
 	build/plugin.o \
@@ -129,7 +131,7 @@ install :
 	$(INSTALL) -dm 755 "$(DESTDIR)$(DATADIR)/$(PACKAGE)/plugins"
 	$(INSTALL) -dm 755 "$(DESTDIR)$(DATADIR)/$(PACKAGE)/modules"
 	$(CP) $(PACKAGE) "$(DESTDIR)$(BINDIR)/$(PACKAGE)"
-	$(CP) config.ini "$(DESTDIR)$(SYSCONFDIR)/$(PACKAGE).ini"
+	$(CAT) config.ini | $(SED) "s|%PLUGINDIR%|$(DATADIR)/$(PACKAGE)/plugins|" | $(SED) "s|%MODULEDIR%|$(DATADIR)/$(PACKAGE)/modules|" > "$(DESTDIR)$(SYSCONFDIR)/$(PACKAGE).ini"
 	$(CP) -r plugins/* "$(DESTDIR)$(DATADIR)/$(PACKAGE)/plugins"
 	$(CP) -r luamods/* "$(DESTDIR)$(DATADIR)/$(PACKAGE)/modules"
 
