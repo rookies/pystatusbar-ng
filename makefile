@@ -24,16 +24,19 @@ CXX=g++
 CC=gcc
 MKDIR=mkdir
 PKGCONFIG=pkg-config
+CP=cp
 
 OBJ=build/main.o build/plugin.o build/statusbar.o
 HEADERS=src/main.hpp src/plugin.hpp src/statusbar.hpp include/SimpleIni.h include/ConvertUTF.h
 LIBS=lua5.1
 LIBS_LUAMODS=lua5.1
-LUAMODS=luamods/subprocess.so luamods/struct.so
+LUAMODS=luamods/subprocess.so luamods/struct.so luamods/md5.lua luamods/md5/core.so
 LM_SUBPROCESS=src/luamods/subprocess/liolib-copy.c src/luamods/subprocess/subprocess.c
 LM_STRUCT=src/luamods/struct/struct.c
+LM_MD5_CORE=src/luamods/md5/md5.c src/luamods/md5/md5lib.c
 CXXFLAGS=-I include -c -Wall `$(PKGCONFIG) --cflags $(LIBS)`
 LDFLAGS=-lpthread `pkg-config --libs $(LIBS)`
+LUAMOD_FLAGS=`$(PKGCONFIG) --cflags --libs $(LIBS_LUAMODS)` -fPIC -shared -O2
 
 all : pystatusbar-ng mods
 
@@ -57,7 +60,16 @@ luamods :
 	$(MKDIR) ./luamods/
 
 luamods/subprocess.so : $(LM_SUBPROCESS)
-	$(CC) -fPIC -shared -DOS_POSIX -o $@ `$(PKGCONFIG) --cflags --libs $(LIBS_LUAMODS)` $(LM_SUBPROCESS)
+	$(CC) -DOS_POSIX -o $@ $(LUAMOD_FLAGS) $(LM_SUBPROCESS)
 
 luamods/struct.so : $(LM_STRUCT)
-	$(CC) -fPIC -shared -D_POSIX_SOURCE -DSTRUCT_INT="long long" -O2 -o $@ `$(PKGCONFIG) --cflags --libs $(LIBS_LUAMODS)` $(LM_STRUCT)
+	$(CC) -D_POSIX_SOURCE -DSTRUCT_INT="long long" -o $@ $(LUAMOD_FLAGS) $(LM_STRUCT)
+
+luamods/md5 : 
+	$(MKDIR) $@
+
+luamods/md5.lua : src/luamods/md5/md5.lua
+	$(CP) $< $@
+
+luamods/md5/core.so : luamods/md5 $(LM_MD5_CORE)
+	$(CC) -o $@ $(LUAMOD_FLAGS) $(LM_MD5_CORE)

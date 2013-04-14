@@ -50,7 +50,7 @@ bool Plugin::init(std::string name, std::string file, PluginConfigPair *conf)
 	m_lua = luaL_newstate();
 	luaL_openlibs(m_lua);
 	/*
-	 * Get LUA_PATH:
+	 * Get LUA_CPATH:
 	*/
 	lua_getglobal(m_lua, "package");
 	lua_getfield(m_lua, -1, "cpath");
@@ -65,11 +65,33 @@ bool Plugin::init(std::string name, std::string file, PluginConfigPair *conf)
 		tmp3.append(tmp2);
 	};
 	/*
-	 * And push the new path:
+	 * And push the new LUA_CPATH:
 	*/
 	lua_pop(m_lua, 1);
 	lua_pushstring(m_lua, tmp3.c_str());
 	lua_setfield(m_lua, -2, "cpath");
+	lua_pop(m_lua, 1);
+	/*
+	 * Get LUA_PATH:
+	*/
+	lua_getglobal(m_lua, "package");
+	lua_getfield(m_lua, -1, "path");
+	tmp2 = lua_tostring(m_lua, -1);
+	/*
+	 * Append our module directory to the path:
+	*/
+	tmp3 = "./luamods/?.lua";
+	if (tmp2.length() > 0)
+	{
+		tmp3.append(";");
+		tmp3.append(tmp2);
+	};
+	/*
+	 * And push the new LUA_PATH:
+	*/
+	lua_pop(m_lua, 1);
+	lua_pushstring(m_lua, tmp3.c_str());
+	lua_setfield(m_lua, -2, "path");
 	lua_pop(m_lua, 1);
 	/*
 	 * Push the plugin configuration to the lua stack:
