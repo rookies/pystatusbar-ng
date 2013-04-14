@@ -26,8 +26,14 @@ MKDIR=mkdir
 PKGCONFIG=pkg-config
 CP=cp
 
-OBJ=build/main.o build/plugin.o build/statusbar.o
-HEADERS=src/main.hpp src/plugin.hpp src/statusbar.hpp include/SimpleIni.h include/ConvertUTF.h
+OBJ=build/main.o \
+	build/plugin.o \
+	build/statusbar.o
+HEADERS=src/main.hpp \
+	src/plugin.hpp \
+	src/statusbar.hpp \
+	include/SimpleIni.h \
+	include/ConvertUTF.h
 LIBS=lua5.1
 LIBS_LUAMODS=lua5.1
 MIME_V=1.0.2
@@ -49,9 +55,11 @@ LUAMODS=luamods/subprocess.so \
 	luamods/socket/socket.so.$(SOCKET_V) \
 	luamods/LuaXml.lua \
 	luamods/LuaXML_lib.so
-LM_SUBPROCESS=src/luamods/subprocess/liolib-copy.c src/luamods/subprocess/subprocess.c
+LM_SUBPROCESS=src/luamods/subprocess/liolib-copy.c \
+	src/luamods/subprocess/subprocess.c
 LM_STRUCT=src/luamods/struct/struct.c
-LM_MD5_CORE=src/luamods/md5/md5.c src/luamods/md5/md5lib.c
+LM_MD5_CORE=src/luamods/md5/md5.c \
+	src/luamods/md5/md5lib.c
 LM_SOCKET_SOCKET=src/luamods/socket/luasocket.c \
 	src/luamods/socket/timeout.c \
 	src/luamods/socket/buffer.c \
