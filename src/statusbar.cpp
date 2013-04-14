@@ -242,7 +242,9 @@ void StatusBar::m_init_plugin(unsigned int index, std::string name)
 	/*
 	 * Get plugin file path:
 	*/
-	tmp = "plugins/";
+	tmp = m_ini.GetValue("general", "plugindir", "plugins");
+	if (tmp.substr(tmp.length()-1).compare("/") != 0)
+		tmp.append("/");
 	tmp.append(name);
 	tmp.append(".lua");
 	/*
