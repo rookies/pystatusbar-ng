@@ -31,7 +31,7 @@
         Default: 0
 ]]--
 PLUGIN_infoCollectorsNum = 1
-PLUGIN_infoCollector0_interval = 60
+PLUGIN_infoCollector0_interval = 300
 PLUGIN_infoCollector0_important = true
 
 require "md5"
