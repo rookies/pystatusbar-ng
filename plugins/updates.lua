@@ -71,8 +71,8 @@ function infoCollector0()
 	-- read:
 	line = f.read(f)
 	-- split data:
-	updates = string.sub(line, 0, string.find(line, "-")-1)
-	t = string.sub(line, string.find(line, "-")+1)
+	updates = tonumber(string.sub(line, 0, string.find(line, "-")-1))
+	t = tonumber(string.sub(line, string.find(line, "-")+1))
 	-- close file:
 	f.close(f)
 	-- return success:
