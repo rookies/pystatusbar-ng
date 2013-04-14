@@ -99,7 +99,7 @@ function infoCollector0()
 				break
 			else
 				unlocked = struct.unpack("B", buf)
-				if unlocked == 1 and t >= starttime and t <= endtime then
+				if unlocked and unlocked == 1 and t >= starttime and t <= endtime then
 					uptime = uptime+1
 				end
 			end
