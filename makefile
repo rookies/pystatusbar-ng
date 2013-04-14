@@ -19,12 +19,32 @@
 #  
 #
 
+PACKAGE=pystatusbar-ng
+
+PREFIX=/usr/local
+EXEC_PREFIX=$(PREFIX)
+BINDIR=$(EXEC_PREFIX)/bin
+SBINDIR=$(EXEC_PREFIX)/sbin
+LIBEXECDIR=$(EXEC_PREFIX)/libexec
+DATAROOTDIR=$(PREFIX)/share
+DATADIR=$(DATAROOTDIR)
+SYSCONFDIR=$(PREFIX)/etc
+SHAREDSTATEDIR=$(PREFIX)/com
+LOCALSTATEDIR=$(PREFIX)/var
+INCLUDEDIR=$(PREFIX)/include
+DOCDIR=$(DATAROOTDIR)/doc/$(PACKAGE)
+INFODIR=$(DATAROOTDIR)/info
+LIBDIR=$(EXEC_PREFIX)/lib
+LOCALEDIR=$(DATAROOTDIR)/locale
+MANDIR=$(DATAROOTDIR)/man
+
 RM=rm
 CXX=g++
 CC=gcc
 MKDIR=mkdir
 PKGCONFIG=pkg-config
 CP=cp
+INSTALL=install
 
 OBJ=build/main.o \
 	build/plugin.o \
@@ -101,9 +121,19 @@ CXXFLAGS=-I include -c -Wall `$(PKGCONFIG) --cflags $(LIBS)`
 LDFLAGS=-lpthread `pkg-config --libs $(LIBS)`
 LUAMOD_FLAGS=`$(PKGCONFIG) --cflags --libs $(LIBS_LUAMODS)` -fPIC -shared -O2
 
-all : pystatusbar-ng mods
+all : $(PACKAGE) mods
 
-pystatusbar-ng : build $(OBJ)
+install :
+	$(INSTALL) -dm 755 "$(DESTDIR)$(BINDIR)"
+	$(INSTALL) -dm 755 "$(DESTDIR)$(SYSCONFDIR)"
+	$(INSTALL) -dm 755 "$(DESTDIR)$(DATADIR)/$(PACKAGE)/plugins"
+	$(INSTALL) -dm 755 "$(DESTDIR)$(DATADIR)/$(PACKAGE)/modules"
+	$(CP) $(PACKAGE) "$(DESTDIR)$(BINDIR)/$(PACKAGE)"
+	$(CP) config.ini "$(DESTDIR)$(SYSCONFDIR)/$(PACKAGE).ini"
+	$(CP) -r plugins/* "$(DESTDIR)$(DATADIR)/$(PACKAGE)/plugins"
+	$(CP) -r luamods/* "$(DESTDIR)$(DATADIR)/$(PACKAGE)/modules"
+
+$(PACKAGE) : build $(OBJ)
 	$(CXX) $(LDFLAGS) $(OBJ) -o $@
 
 clean :
