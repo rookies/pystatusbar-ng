@@ -30,10 +30,46 @@ OBJ=build/main.o build/plugin.o build/statusbar.o
 HEADERS=src/main.hpp src/plugin.hpp src/statusbar.hpp include/SimpleIni.h include/ConvertUTF.h
 LIBS=lua5.1
 LIBS_LUAMODS=lua5.1
-LUAMODS=luamods/subprocess.so luamods/struct.so luamods/md5.lua luamods/md5/core.so
+MIME_V=1.0.2
+SOCKET_V=2.0.2
+LUAMODS=luamods/subprocess.so \
+	luamods/struct.so \
+	luamods/md5.lua \
+	luamods/md5/core.so \
+	luamods/ltn12.lua \
+	luamods/socket.lua \
+	luamods/mime.lua \
+	luamods/socket/http.lua \
+	luamods/socket/url.lua \
+	luamods/socket/tp.lua \
+	luamods/socket/ftp.lua \
+	luamods/socket/smtp.lua \
+	luamods/socket/unix.so \
+	luamods/socket/mime.so.$(MIME_V) \
+	luamods/socket/socket.so.$(SOCKET_V)
 LM_SUBPROCESS=src/luamods/subprocess/liolib-copy.c src/luamods/subprocess/subprocess.c
 LM_STRUCT=src/luamods/struct/struct.c
 LM_MD5_CORE=src/luamods/md5/md5.c src/luamods/md5/md5lib.c
+LM_SOCKET_SOCKET=src/luamods/socket/luasocket.c \
+	src/luamods/socket/timeout.c \
+	src/luamods/socket/buffer.c \
+	src/luamods/socket/io.c \
+	src/luamods/socket/auxiliar.c \
+	src/luamods/socket/options.c \
+	src/luamods/socket/inet.c \
+	src/luamods/socket/tcp.c \
+	src/luamods/socket/udp.c \
+	src/luamods/socket/except.c \
+	src/luamods/socket/select.c \
+	src/luamods/socket/usocket.c
+LM_SOCKET_MIME=src/luamods/socket/mime.c
+LM_SOCKET_UNIX=src/luamods/socket/buffer.c \
+	src/luamods/socket/auxiliar.c \
+	src/luamods/socket/options.c \
+	src/luamods/socket/timeout.c \
+	src/luamods/socket/io.c \
+	src/luamods/socket/usocket.c \
+	src/luamods/socket/unix.c
 CXXFLAGS=-I include -c -Wall `$(PKGCONFIG) --cflags $(LIBS)`
 LDFLAGS=-lpthread `pkg-config --libs $(LIBS)`
 LUAMOD_FLAGS=`$(PKGCONFIG) --cflags --libs $(LIBS_LUAMODS)` -fPIC -shared -O2
@@ -73,3 +109,39 @@ luamods/md5.lua : src/luamods/md5/md5.lua
 
 luamods/md5/core.so : luamods/md5 $(LM_MD5_CORE)
 	$(CC) -o $@ $(LUAMOD_FLAGS) $(LM_MD5_CORE)
+
+luamods/socket : 
+	$(MKDIR) $@
+
+luamods/ltn12.lua : src/luamods/socket/ltn12.lua
+	$(CP) $< $@
+
+luamods/socket.lua : src/luamods/socket/socket.lua
+	$(CP) $< $@
+
+luamods/mime.lua : src/luamods/socket/mime.lua
+	$(CP) $< $@
+
+luamods/socket/http.lua : src/luamods/socket/http.lua luamods/socket
+	$(CP) $< $@
+
+luamods/socket/url.lua : src/luamods/socket/url.lua luamods/socket
+	$(CP) $< $@
+
+luamods/socket/tp.lua : src/luamods/socket/tp.lua luamods/socket
+	$(CP) $< $@
+
+luamods/socket/ftp.lua : src/luamods/socket/ftp.lua luamods/socket
+	$(CP) $< $@
+
+luamods/socket/smtp.lua : src/luamods/socket/smtp.lua luamods/socket
+	$(CP) $< $@
+
+luamods/socket/unix.so : luamods/socket $(LM_SOCKET_UNIX)
+	$(CC) -o $@ $(LUAMOD_FLAGS) $(LM_SOCKET_UNIX)
+
+luamods/socket/mime.so.$(MIME_V) : luamods/socket $(LM_SOCKET_MIME)
+	$(CC) -o $@ $(LUAMOD_FLAGS) $(LM_SOCKET_MIME)
+
+luamods/socket/socket.so.$(SOCKET_V) : luamods/socket $(LM_SOCKET_SOCKET)
+	$(CC) -o $@ $(LUAMOD_FLAGS) $(LM_SOCKET_SOCKET)
