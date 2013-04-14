@@ -46,7 +46,9 @@ LUAMODS=luamods/subprocess.so \
 	luamods/socket/smtp.lua \
 	luamods/socket/unix.so \
 	luamods/socket/mime.so.$(MIME_V) \
-	luamods/socket/socket.so.$(SOCKET_V)
+	luamods/socket/socket.so.$(SOCKET_V) \
+	luamods/LuaXml.lua \
+	luamods/LuaXML_lib.so
 LM_SUBPROCESS=src/luamods/subprocess/liolib-copy.c src/luamods/subprocess/subprocess.c
 LM_STRUCT=src/luamods/struct/struct.c
 LM_MD5_CORE=src/luamods/md5/md5.c src/luamods/md5/md5lib.c
@@ -70,6 +72,7 @@ LM_SOCKET_UNIX=src/luamods/socket/buffer.c \
 	src/luamods/socket/io.c \
 	src/luamods/socket/usocket.c \
 	src/luamods/socket/unix.c
+LM_LUAXML=src/luamods/LuaXML/LuaXML_lib.c
 CXXFLAGS=-I include -c -Wall `$(PKGCONFIG) --cflags $(LIBS)`
 LDFLAGS=-lpthread `pkg-config --libs $(LIBS)`
 LUAMOD_FLAGS=`$(PKGCONFIG) --cflags --libs $(LIBS_LUAMODS)` -fPIC -shared -O2
@@ -145,3 +148,9 @@ luamods/socket/mime.so.$(MIME_V) : luamods/socket $(LM_SOCKET_MIME)
 
 luamods/socket/socket.so.$(SOCKET_V) : luamods/socket $(LM_SOCKET_SOCKET)
 	$(CC) -o $@ $(LUAMOD_FLAGS) $(LM_SOCKET_SOCKET)
+
+luamods/LuaXml.lua : src/luamods/LuaXML/LuaXml.lua
+	$(CP) $< $@
+
+luamods/LuaXML_lib.so : $(LM_LUAXML)
+	$(CC) -o $@ $(LUAMOD_FLAGS) $(LM_LUAXML)
