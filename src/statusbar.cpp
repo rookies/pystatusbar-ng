@@ -270,7 +270,7 @@ void StatusBar::m_init_plugin(unsigned int index, std::string name)
 	/*
 	 * Try to call the init() method:
 	*/
-	if (m_plugins[index].init(name, tmp, conf))
+	if (m_plugins[index].init(name, tmp, conf, m_ini.GetValue("general", "moduledir", "luamods")))
 	{
 		/*
 		 * Successfull, print information:

@@ -53,7 +53,7 @@
 			Plugin();
 			virtual ~Plugin();
 
-			bool init(std::string name, std::string file, PluginConfigPair *conf);
+			bool init(std::string name, std::string file, PluginConfigPair *conf, std::string moduledir);
 			bool is_active(void);
 			bool print_content(void);
 			void uninit(void);

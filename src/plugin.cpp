@@ -35,7 +35,7 @@ Plugin::~Plugin()
 {
 	
 }
-bool Plugin::init(std::string name, std::string file, PluginConfigPair *conf)
+bool Plugin::init(std::string name, std::string file, PluginConfigPair *conf, std::string moduledir)
 {
 	m_active = false;
 	/*
@@ -58,7 +58,10 @@ bool Plugin::init(std::string name, std::string file, PluginConfigPair *conf)
 	/*
 	 * Append our module directory to the path:
 	*/
-	tmp3 = "./luamods/?.so";
+	tmp3 = moduledir;
+	if (tmp3.substr(tmp3.length()-1).compare("/") != 0)
+		tmp3.append("/");
+	tmp3.append("?.so");
 	if (tmp2.length() > 0)
 	{
 		tmp3.append(";");
@@ -80,7 +83,10 @@ bool Plugin::init(std::string name, std::string file, PluginConfigPair *conf)
 	/*
 	 * Append our module directory to the path:
 	*/
-	tmp3 = "./luamods/?.lua";
+	tmp3 = moduledir;
+	if (tmp3.substr(tmp3.length()-1).compare("/") != 0)
+		tmp3.append("/");
+	tmp3.append("?.lua");
 	if (tmp2.length() > 0)
 	{
 		tmp3.append(";");
